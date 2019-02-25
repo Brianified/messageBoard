@@ -24,12 +24,12 @@ public class LoadDatabase {
 		return args -> 
 		{
 			BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-			Employee user = new Employee("Bilbo Baggins", "burglar");
+			Employee user = new Employee("Bilbo Baggins", "bilbo");
 			user.setPassword(passwordEncoder.encode("password"));
 			log.info("Preloading " + repository.save(user));
 			
 			List<Employee> employees = new ArrayList<Employee>();
-			Employee user2 = new Employee("Frodo Baggins", "thief");
+			Employee user2 = new Employee("Frodo Baggins", "frodo");
 			user2.setPassword(passwordEncoder.encode("password"));
 			employees.add(user);
 			user2.setFollowing(employees);

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.controllers.assemblers.MessageResourceAssembler;
 import com.example.demo.models.Employee;
 import com.example.demo.models.Message;
+import com.example.demo.models.NewMessage;
 import com.example.demo.service.EmployeeService;
 import com.example.demo.service.MessageService;
 import com.google.common.base.Preconditions;
@@ -62,7 +63,7 @@ public class MessageController {
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "Authorization", value = "Authorization bearer token", required = true, dataType = "string", paramType = "header")
       })
-	public Message newEmployee(Authentication authentication, @RequestBody NewMessage newMessage) {
+	public Message newMessage(Authentication authentication, @RequestBody NewMessage newMessage) {
 		Preconditions.checkNotNull(newMessage);
 		Message message = new Message();
 		message.setMessage(newMessage.getMessage());
@@ -104,18 +105,5 @@ public class MessageController {
 		String username = authentication.getName();
 		Employee user = employeeService.getEmployee(username);
 		service.deleteMessage(id, user);
-	}
-	
-	private class NewMessage
-	{
-		private String message;
-
-		public String getMessage() {
-			return message;
-		}
-
-		public void setMessage(String message) {
-			this.message = message;
-		}
 	}
 }
