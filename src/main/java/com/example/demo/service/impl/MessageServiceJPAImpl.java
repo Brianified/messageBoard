@@ -3,6 +3,7 @@ package com.example.demo.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.demo.exceptions.EmployeeDoesNotOwnMessage;
 import com.example.demo.exceptions.MessageNotFoundException;
 import com.example.demo.models.Employee;
 import com.example.demo.models.Message;
@@ -40,21 +41,34 @@ public class MessageServiceJPAImpl implements MessageService {
 
 	@Override
 	public Message replaceMessage(Long id, Message newMessage) {
-		return repository.findById(id)
-				.map(message -> {
-					message.setUser(newMessage.getUser());
-					message.setMessage(newMessage.getMessage());
-					return repository.save(message);
-				})
-				.orElseGet(() -> {
-					newMessage.setId(id);
-					return repository.save(newMessage);
-				});
+		
+		Message oldMessage = getMessage(id);
+		Employee owner = oldMessage.getUser();
+		Employee user = newMessage.getUser();
+		if (owner.getUsername().equals(user.getUsername()))
+		{
+			repository.save(newMessage);
+		}
+		else
+		{
+			throw new EmployeeDoesNotOwnMessage();
+		}
+		return newMessage;
 	}
 
 	@Override
-	public void deleteMessage(Long id) {
-		repository.deleteById(id);
+	public void deleteMessage(Long id, Employee user) {
+		Message oldMessage = getMessage(id);
+		Employee owner = oldMessage.getUser();
+		
+		if (owner.getUsername().equals(user.getUsername()))
+		{
+			repository.deleteById(id);
+		}
+		else
+		{
+			throw new EmployeeDoesNotOwnMessage();
+		}
 	}
 
 }

@@ -62,9 +62,13 @@ public class MessageController {
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "Authorization", value = "Authorization bearer token", required = true, dataType = "string", paramType = "header")
       })
-	public Message newEmployee(@RequestBody Message newMessage) {
+	public Message newEmployee(Authentication authentication, @RequestBody NewMessage newMessage) {
 		Preconditions.checkNotNull(newMessage);
-		return service.newMessage(newMessage);
+		Message message = new Message();
+		message.setMessage(newMessage.getMessage());
+		Employee user = employeeService.getEmployee(authentication.getName());
+		message.setUser(user);
+		return service.newMessage(message);
 	}
 
 	@GetMapping("/messages/{id}")
@@ -81,16 +85,37 @@ public class MessageController {
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "Authorization", value = "Authorization bearer token", required = true, dataType = "string", paramType = "header")
       })
-	public Message replaceMessage(@RequestBody Message newMessage, @PathVariable Long id) {
+	public Message replaceMessage(Authentication authentication, @RequestBody NewMessage newMessage, @PathVariable Long id) {
 		Preconditions.checkNotNull(newMessage);
-		return service.replaceMessage(id, newMessage);
+		String username = authentication.getName();
+		Employee user = employeeService.getEmployee(username);
+		Message message = new Message();
+		message.setId(id);
+		message.setUser(user);
+		message.setMessage(newMessage.getMessage());
+		return service.replaceMessage(id, message);
 	}
 
 	@DeleteMapping("/messages/{id}")
 	@ApiImplicitParams({
         @ApiImplicitParam(name = "Authorization", value = "Authorization bearer token", required = true, dataType = "string", paramType = "header")
       })
-	public void deleteMessage(@PathVariable Long id) {
-		service.deleteMessage(id);
+	public void deleteMessage(Authentication authentication, @PathVariable Long id) {
+		String username = authentication.getName();
+		Employee user = employeeService.getEmployee(username);
+		service.deleteMessage(id, user);
+	}
+	
+	private class NewMessage
+	{
+		private String message;
+
+		public String getMessage() {
+			return message;
+		}
+
+		public void setMessage(String message) {
+			this.message = message;
+		}
 	}
 }

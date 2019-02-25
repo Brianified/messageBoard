@@ -16,5 +16,5 @@ public interface MessageService
 	
 	public Message replaceMessage(Long id, Message newMessage) throws MessageNotFoundException;
 	
-	public void deleteMessage(Long id) throws MessageNotFoundException;
+	public void deleteMessage(Long id, Employee user) throws RuntimeException;
 }
